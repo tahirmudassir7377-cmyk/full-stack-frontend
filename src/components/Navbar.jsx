@@ -17,20 +17,20 @@ function Navbar() {
 
         <Link to="/">
           <h1 className="text-2xl font-bold text-gray-900">
-            Shop<span className="text-blue-600">Hub</span>
+           Shop<span className="text-primary">Hub</span>
           </h1>
         </Link>
 
         <ul className="hidden md:flex gap-8 text-gray-700 font-medium">
-          <li><Link to="/" className="hover:text-blue-600 transition">Home</Link></li>
-          <li><a href="#" className="hover:text-blue-600 transition">Products</a></li>
-          <li><a href="#" className="hover:text-blue-600 transition">Categories</a></li>
-          <li><a href="#" className="hover:text-blue-600 transition">About</a></li>
-          <li><a href="#" className="hover:text-blue-600 transition">Contact</a></li>
+          <li><Link to="/" className="hover:text-primary transition">Home</Link></li>
+          <li><a href="#" className="hover:text-primary transition">Products</a></li>
+          <li><a href="#" className="hover:text-primary transition">Categories</a></li>
+          <li><a href="#" className="hover:text-primary transition">About</a></li>
+          <li><a href="#" className="hover:text-primary transition">Contact</a></li>
         </ul>
 
         <div className="flex items-center gap-4">
-          <button className="text-gray-700 hover:text-blue-600">
+          <button className="text-gray-700 hover:text-primary">
             🛒 Cart
           </button>
 
@@ -46,7 +46,7 @@ function Navbar() {
             </div>
           ) : (
             <Link to="/login">
-              <button className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">
+              <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary-dark transition">
                 Login
               </button>
             </Link>

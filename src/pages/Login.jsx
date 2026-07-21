@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { login } from "../services/api";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -18,28 +21,13 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("https://fullstackbackend-project.bonto.run/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message);
-        setLoading(false);
-        return;
-      }
-
+      const data = await login(formData);
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-
       alert("Login successful!");
       navigate("/");
     } catch (error) {
-      console.error(error);
-      alert("Something went wrong");
+      alert(error.message);
     } finally {
       setLoading(false);
     }
@@ -52,37 +40,31 @@ function Login() {
         <p className="text-gray-600 mb-8">Login to your account</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <input
+          <Input
             type="email"
             name="email"
             placeholder="Email Address"
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg p-3"
           />
-          <input
+          <Input
             type="password"
             name="password"
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg p-3"
           />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
-          >
+          <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Logging in..." : "Login"}
-          </button>
+          </Button>
         </form>
 
         <p className="text-center text-gray-600 mt-6">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-blue-600 font-medium hover:underline">
+          <Link to="/signup" className="text-primary font-medium hover:underline">
             Sign Up
           </Link>
         </p>
