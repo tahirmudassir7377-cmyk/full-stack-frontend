@@ -1,16 +1,21 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../services/api";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { login, resendVerification } from "../services/api";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 
 function Login() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const verified = searchParams.get("verified");
+    if (verified === "true") alert("Email verified successfully! You can now log in.");
+    if (verified === "false") alert("Verification link is invalid or expired.");
+  }, [searchParams]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,17 +24,28 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setNeedsVerification(false);
 
     try {
       const data = await login(formData);
-      localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      alert("Login successful!");
       navigate("/");
     } catch (error) {
+      if (error.message.includes("verify")) {
+        setNeedsVerification(true);
+      }
       alert(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      const data = await resendVerification(formData.email);
+      alert(data.message);
+    } catch (error) {
+      alert(error.message);
     }
   };
 
@@ -40,27 +56,18 @@ function Login() {
         <p className="text-gray-600 mb-8">Login to your account</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <Input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-
+          <Input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required />
+          <Input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Logging in..." : "Login"}
           </Button>
         </form>
+
+        {needsVerification && (
+          <button onClick={handleResend} className="text-sm text-primary hover:underline mt-4 block mx-auto">
+            Resend verification email
+          </button>
+        )}
 
         <p className="text-center text-gray-600 mt-6">
           Don't have an account?{" "}

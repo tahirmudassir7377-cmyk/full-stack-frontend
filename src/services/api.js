@@ -1,17 +1,15 @@
 const BASE_URL = "https://fullstackbackend-project.bonto.run/api";
 
 const request = async (endpoint, options = {}) => {
-  const token = localStorage.getItem("token");
-
   const headers = {
     "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
     headers,
+    credentials: "include",
   });
 
   const data = await response.json();
@@ -24,15 +22,17 @@ const request = async (endpoint, options = {}) => {
 };
 
 export const signup = (formData) =>
-  request("/auth/signup", {
-    method: "POST",
-    body: JSON.stringify(formData),
-  });
+  request("/auth/signup", { method: "POST", body: JSON.stringify(formData) });
 
 export const login = (formData) =>
-  request("/auth/login", {
+  request("/auth/login", { method: "POST", body: JSON.stringify(formData) });
+
+export const logout = () => request("/auth/logout", { method: "POST" });
+
+export const resendVerification = (email) =>
+  request("/auth/resend-verification", {
     method: "POST",
-    body: JSON.stringify(formData),
+    body: JSON.stringify({ email }),
   });
 
 export const getProfile = () => request("/auth/profile");

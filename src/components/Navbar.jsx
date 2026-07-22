@@ -1,12 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../services/api";
 
 function Navbar() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error(error);
+    }
     localStorage.removeItem("user");
     navigate("/login");
   };
@@ -17,7 +21,7 @@ function Navbar() {
 
         <Link to="/">
           <h1 className="text-2xl font-bold text-gray-900">
-           Shop<span className="text-primary">Hub</span>
+            Shop<span className="text-primary">Hub</span>
           </h1>
         </Link>
 
@@ -34,7 +38,7 @@ function Navbar() {
             🛒 Cart
           </button>
 
-          {token ? (
+          {user ? (
             <div className="flex items-center gap-3">
               <span className="text-gray-700 font-medium">Hi, {user?.name}</span>
               <button
